@@ -10,7 +10,7 @@
         
   <body>
     <div id="app">      
-        <nav class="navbar navbar-light bg-info">
+        <nav class="navbar navbar-light bg-info fixed-top">
           <span class="navbar-brand mb-0 h1">Hola 0048</span>
           <ul class="navbar-nav">
             <li class="navbar-item">
@@ -22,7 +22,32 @@
           <product @add-to-cart="addToCart" @remove-from-cart="removeFromCart"></product>      
         </div>
     </div>
-        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>    
+      <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>  
+    <script type="text/x-template" id="template-product">
+       <div class="row pt-5">
+          <div class="col-12 col-md-6">
+              <img v-bind:src="img"   width="100%">           
+          </div>
+          <div class="col-12 col-md-6">
+            <h1>{{ product }} </h1>
+            <h2>{{ description}}</h2>
+            <h4>{{stock}}</h4>
+            <p v-if='stock>10'> en stock</p>
+            <p v-else-if= 'stock <= 10 && stock > 0'>quedan muy pocas </p>
+            <p v-else>Agotadas</p>
+              <ul>
+                <li v-for='(detail, index) in details' :key="index">{{detail}}</li>
+              </ul>
+              <div v-for='variant in variants' :key='variant.id'>
+                <p v-on:mouseover='updateProduct(variant)'>{{variant.type}}</p>
+              </div>
+            <a :href="link">ver</a>            
+            <button class="btn btn-sm btn-info" @click='addToCart' :disabled="!inStock"> agragar  al carro</button>
+            <button class="btn btn-sm btn-warning" @click='removeFromCart'>Sacar del carro</button>
+          </div>
+    </div>
+
+    </script>  
   </body>    
 </html>
 
@@ -82,32 +107,9 @@ data() {
         
       },
 
-  template: `   
-    <div class="row pt-5">
-          <div class="col">
-            <img v-bind:src="img" width="100%">           
-          </div>
-        <div class="col">
-          <h1>{{ product }} </h1>
-          <h2>{{ description}}</h2>
-          <h4>{{stock}}</h4>
-          <p v-if='stock>10'> en stock</p>
-          <p v-else-if= 'stock <= 10 && stock > 0'>quedan muy pocas </p>
-          <p v-else>Agotadas</p>
-            <ul>
-              <li v-for='(detail, index) in details' :key="index">{{detail}}</li>
-            </ul>
-            <div v-for='variant in variants' :key='variant.id'>
-              <p v-on:mouseover='updateProduct(variant)'>{{variant.type}}</p>
-
-            </div>
-          <a :href="link">ver</a>
-          
-          <button class="btn btn-sm btn-info" @click='addToCart' :disabled="!inStock"> agragar  al carro</button>
-          <button class="btn btn-sm btn-warning" @click='removeFromCart'>Sacar del carro</button>
-        </div>
-      </div>`
-})
+  template: '#template-product'
+  
+  })
     var app = new Vue({
         el: '#app',
         data:{
