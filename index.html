@@ -14,12 +14,12 @@
           <span class="navbar-brand mb-0 h1">Hola 0048</span>
           <ul class="navbar-nav">
             <li class="navbar-item">
-              <a class="nav-link" href="#">{{cart}}</a>
+              <a class="nav-link" href="#">CARRO:{{cart.length}}</a>
             </li>
           </ul>
         </nav>
         <div class="container pt-4">      
-          <product :premium="premium" @add-to-cart="addToCart" @remove-from-cart="removeFromCart"></product>      
+          <product :premium="premium" :cart="cart" @add-to-cart="addToCart" @remove-from-cart="removeFromCart"></product>      
         </div>
     </div>
       <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>  
@@ -54,10 +54,15 @@
 <script>
 Vue.component ("product", { //primero dos argumentos el nombre del componente y obejeto (vacio) segundo argumento
 props:{
-  premium: {/*el que define el props es quién lo recibe informacion que se enviará del padre al hijo con props*/
+  premium: {/*el que define el props es quién lo recibe, informacion que se enviará del padre al hijo con props*/
     type: Boolean,
-    required: true
+    required: true,    
+  },
+  cart: {
+      type: Array,
+      required: true
   }
+
 },
   data() {
     return{
@@ -82,17 +87,20 @@ props:{
         ],
       }
   },
-  methods: {
+  methods: {//hijo
           updateProduct(variant) {
             this.selectedVariant=variant;
         },
         addToCart(){
-         this.$emit("add-too-cart", 1)
+         this.$emit("add-to-cart", this.selectedVariant)
           this.selectedVariant.stock-=1
         },
-        removeFromCart(){           
-            this.$emit("remove-from-cart", 1);
-            this.selectedVariant.stock+=1          
+        removeFromCart(){   
+            var variantInCart = this.cart.find(product => product== this.selectedVariant)        
+            this.$emit("remove-from-cart", this.selectedVariant)
+            if(variantInCart){
+            this.selectedVariant.stock+=1    
+             }     
         }
       },
   computed: {
@@ -123,17 +131,18 @@ props:{
     var app = new Vue({
         el: '#app',
         data:{
-          cart:0,
+          cart:[],
           premium: true
         },
         methods: {//los metodos se pueden separar con mayusculas
-          addToCart(cantidad){
-            this.cart +=cantidad;
+          addToCart(variant){
+            this.cart.push(variant);
           },
 
-          removeFromCart(cantidad){
-            if(this.cart > 0){
-            this.cart -=cantidad;
+          removeFromCart(variant){
+            var index = this.cart.indexOf(variant)//indexOff devuelve la posicion del objeto dentro del arreglo
+            if(index>-1){
+              this.cart.splice(index, 1)//splice elimina el objeto con ese indice (index) y borra 1 de los objetos por posicion
             }
           }
         }
