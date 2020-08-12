@@ -19,42 +19,48 @@
           </ul>
         </nav>
         <div class="container pt-4">      
-          <product @add-to-cart="addToCart" @remove-from-cart="removeFromCart"></product>      
+          <product :premium="premium" @add-to-cart="addToCart" @remove-from-cart="removeFromCart"></product>      
         </div>
     </div>
       <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>  
-    <script type="text/x-template" id="template-product">
-       <div class="row pt-5">
-          <div class="col-12 col-md-6">
-              <img v-bind:src="img"   width="100%">           
-          </div>
-          <div class="col-12 col-md-6">
-            <h1>{{ product }} </h1>
-            <h2>{{ description}}</h2>
-            <h4>{{stock}}</h4>
-            <p v-if='stock>10'> en stock</p>
-            <p v-else-if= 'stock <= 10 && stock > 0'>quedan muy pocas </p>
-            <p v-else>Agotadas</p>
-              <ul>
-                <li v-for='(detail, index) in details' :key="index">{{detail}}</li>
-              </ul>
-              <div v-for='variant in variants' :key='variant.id'>
-                <p v-on:mouseover='updateProduct(variant)'>{{variant.type}}</p>
-              </div>
-            <a :href="link">ver</a>            
-            <button class="btn btn-sm btn-info" @click='addToCart' :disabled="!inStock"> agragar  al carro</button>
-            <button class="btn btn-sm btn-warning" @click='removeFromCart'>Sacar del carro</button>
-          </div>
-    </div>
-
+      <script type="text/x-template" id="template-product">
+        <div class="row pt-5">
+            <div class="col-12 col-md-6">
+                <img v-bind:src="img"   width="100%">           
+            </div>
+            <div class="col-12 col-md-6">
+              <h1>{{ product }} </h1>
+              <h2>{{ description}}</h2>
+              <h4>{{stock}}</h4>
+              <p v-if='stock>10'> en stock</p>
+              <p v-else-if= 'stock <= 10 && stock > 0'>quedan muy pocas </p>
+              <p v-else>Agotadas</p>
+                <ul>
+                  <li v-for='(detail, index) in details' :key="index">{{detail}}</li>
+                </ul>
+                <div v-for='variant in variants' :key='variant.id'>
+                  <p v-on:mouseover='updateProduct(variant)'>{{variant.type}}</p>
+                </div>
+              <a :href="link">ver</a>   
+              <p>Costo de envío: {{shipping}}</p>         
+              <button class="btn btn-sm btn-info" @click='addToCart' :disabled="!inStock"> agragar  al carro</button>
+              <button class="btn btn-sm btn-warning" @click='removeFromCart'>Sacar del carro</button>
+            </div>
+      </div>
     </script>  
   </body>    
 </html>
 
 <script>
-Vue.component ("product", { //primero dos argumentos el nombre del componente y obejto (vacio) segundo argumento
-data() {
-  return{
+Vue.component ("product", { //primero dos argumentos el nombre del componente y obejeto (vacio) segundo argumento
+props:{
+  premium: {/*el que define el props es quién lo recibe informacion que se enviará del padre al hijo con props*/
+    type: Boolean,
+    required: true
+  }
+},
+  data() {
+    return{
           description:'loren ipsum',
           product: 'Longaniza de Brocolli',
           selectedVariant: {},
@@ -75,7 +81,7 @@ data() {
             }
         ],
       }
-},
+  },
   methods: {
           updateProduct(variant) {
             this.selectedVariant=variant;
@@ -89,7 +95,6 @@ data() {
             this.selectedVariant.stock+=1          
         }
       },
-
   computed: {
         inStock(){
            return this.stock>0 ? true :false //retornar el stock >0 ? (if) es verdadero : (si no)  es falso 
@@ -99,35 +104,39 @@ data() {
         },
         stock(){
           return this.selectedVariant.stock
-        }
+        },
+
+          shipping(){
+            
+            return this.premium == true ? "Gratis" : "2.000"
+          }
       },
+
       created() {
         
         this.selectedVariant= this.variants.find(item => item.default ==true)
         
       },
 
-  template: '#template-product'
-  
+  template: '#template-product'  
   })
     var app = new Vue({
         el: '#app',
         data:{
           cart:0,
+          premium: true
         },
-
         methods: {//los metodos se pueden separar con mayusculas
           addToCart(cantidad){
             this.cart +=cantidad;
-
           },
+
           removeFromCart(cantidad){
             if(this.cart > 0){
             this.cart -=cantidad;
             }
           }
-
-        }       
+        }
     })
 
     </script>
