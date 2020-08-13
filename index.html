@@ -101,7 +101,7 @@
 
         <review-send :send="send" v-show="selectedTab=='envio'"></review-send>
 
-        <product-detail :details="details" v-show="selectedTab=='detalles'"> </product-detail>
+        <detail-product :details="details" v-show="selectedTab=='detalles'"> </detail-product>
 
       </div>
     </script>   
@@ -182,15 +182,19 @@
         </form>
       </div>
     </script>
-<!---------------------------FIN TEMPLATE FORMM!!!! ------------------------------------------------------------------------------------>
+<!-------------------------- 
+    
+    
+    <script src="./products/detail.js"></script>-FIN TEMPLATE FORMM!!!! ------------------------------------------------------------------------------------>
 
     
     <script src="./products/index.js"></script>
-    <script src="./products/tabs.js"></script>
     <script src="./products/form.js"></script>
-    <script src="./products/send.js"></script>
+    <script src="./products/send.js"></script>    
     <script src="./products/list.js"></script>
+    <script src="./products/tabs.js"></script>
     <script src="./products/detail.js"></script>
+   
      <script src="main.js"></script>   
   </body>    
 

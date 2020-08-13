@@ -11,7 +11,7 @@ Vue.component("reviews-form", {
     methods: {
         saveReview(){           
                 if(this.review && this.rating && this.email){
-                let productReview = {
+                    let productReview = {
                 email: this.email,
                 review: this.review,
                 rating: this.rating
