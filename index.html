@@ -5,16 +5,17 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Hola Vue</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" 
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     </head>
         
   <body>
-    <div id="app">      
+      <div id="app">      
         <nav class="navbar navbar-light bg-info fixed-top">
           <span class="navbar-brand mb-0 h1">Hola 0048</span>
           <ul class="navbar-nav">
             <li class="navbar-item">
-              <a class="nav-link" href="#" @click="">CARRO:{{cart.length}}</a>
+              <a class="nav-link" href="#" @click="displayCart=true">CARRO:{{cart.length}}</a>
             </li>
           </ul>
         </nav>
@@ -23,170 +24,175 @@
         </div>
     
 
-    <div class="modal show" tabindex="-1" :style="modalStyle" :class="{ show: displayCart }">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Modal title</h5>
-            <button type="button" class="close" @click="displayCart=false" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p>Modal body text goes here.</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="displayCart=false">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+        <div class="modal show" tabindex="-1" :style="modalStyle" :class="{ show: displayCart }">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Tus compras</h5>
+                <button type="button" class="close" @click="displayCart=false" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+             
+
+              <div class="modal-body">
+                <p v-if="!cart.length">Sin productos en el carro</p>
+                <p v-else v-for="product in cart">{{product.type}}</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-warning" @click="cart=[]">Vaciar carrito</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="displayCart=false">Pagar</button>
+                
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>  
 
-  </div>
-
-
-      <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>  
-      <script type="text/x-template" id="template-product">
+<!------------------------------------TEMPLATE PRODUCT!!!! ------------------------------------------------------------------------------->
+    <script type="text/x-template" id="template-product">
         <div class="row pt-5">
             <div class="col-12 col-md-6">
                 <img v-bind:src="img"   width="100%">           
             </div>
             <div class="col-12 col-md-6">
-              <h1>{{ product }} </h1>
-              <h2>{{ description}}</h2>
-              <h4>{{stock}}</h4>
-              <p v-if='stock>10'> en stock</p>
-              <p v-else-if= 'stock <= 10 && stock > 0'>quedan muy pocas </p>
-              <p v-else>Agotadas</p>
+                <h1>{{ product }} </h1>
+                <h2>{{ description}}</h2>
+                <h4>{{stock}}</h4>
+                <p v-if='stock>10'> en stock</p>
+                <p v-else-if= 'stock <= 10 && stock > 0'>quedan muy pocas </p>
+                <p v-else>Agotadas</p>
                 <ul>
                   <li v-for='(detail, index) in details' :key="index">{{detail}}</li>
-                </ul>
-                <div v-for='variant in variants' :key='variant.id'>
-                  <p v-on:mouseover='updateProduct(variant)'>{{variant.type}}</p>
-                </div>
-              <a :href="link">ver</a>   
-              <p>Costo de envío: {{shipping}}</p>         
-              <button class="btn btn-sm btn-info" @click='addToCart' :disabled="!inStock"> agragar  al carro</button>
-              <button class="btn btn-sm btn-warning" @click='removeFromCart'>Sacar del carro</button>
-            </div>
-      </div>
+                </ul>                
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="inputGroupSelect01">Variante</label>
+                    </div>                                  
+                  <select class="custom-select" id=""  v-model="selectedVariant">
+                    <option v-for='variant in variants' :key="variant.id" :value="variant" >{{variant.type}}</option>
+                  </select>                
+                </div>             
+                 
+                <button class="btn btn-sm btn-info" @click='addToCart' :disabled="!inStock"> agregar  al carro</button>
+                <button class="btn btn-sm btn-warning" @click='removeFromCart'>Sacar del carro</button> 
+                  
+                
+                <product-tabs :reviews="reviews" :send="shipping" :details="details"></product-tabs>
+          </div>          
+        </div>
     </script>  
+
+<!--FIN TEMPLATE PRODUCT!!!! ---------------------------------------------------------------------------------------------------------->
+
+
+<!-----------------TEMPLATE TABS!!!! -------------------------------------------------------------------------------------------------->
+    <script type="text/x-template"  id="template-tabs">
+      <div>
+        <ul class="nav nav-tabs">
+          <li v-for="(tab, index) in tabs" :key="index" class="nav-item" @click.prevent="selectedTab=tab">
+            <a class="nav-link active" href="#">{{tab}}</a>
+          </li>             
+        </ul>
+        <reviews-form v-show="selectedTab=='agregar review'"></reviews-form>
+
+        <review-list :reviews="reviews" v-show="selectedTab=='ver review'" ></review-list><!-- v-show oculta en un display none -->
+
+        <review-send :send="send" v-show="selectedTab=='envio'"></review-send>
+
+        <product-detail :details="details" v-show="selectedTab=='detalles'"> </product-detail>
+
+      </div>
+    </script>   
+<!----------------------------FIN TEMPLATE TABSSSS!!!! ---------------------------------------------------------------------------->
+
+<!----------------------------------- TEMPLATE LIST!!!! ------------------------------------------------------------------------------->
+    <script type="text/x-template" id="template-list" >
+      <div>
+        <div v-for="review in reviews">
+          {{review.email}}| {{review.review}}| {{review.rating}}
+        </div>
+      </div>
+     
+    </script>
+<!----------------------------FIN TEMPLATE LIST!!!! ------------------------------------------------------------------------------------>
+
+<!----------------------------TEMPLATE SEND!!!! ------------------------------------------------------------------------------------>
+
+    <script type="text/x-template" id="template-send">
+      <div>
+        {{send}}
+      </div>
+    </script>
+<!----------------------------FIN TEMPLATE SEND!!!! ------------------------------------------------------------------------------------>
+
+<!----------------------------TEMPLATE DETAILS!!!! ------------------------------------------------------------------------------------>
+
+<script type="text/x-template" id="template-detail">
+  <div>
+    {{details}}
+  </div>
+</script>
+<!----------------------------FIN TEMPLATE DETAILS!!!! ------------------------------------------------------------------------------------>
+
+
+
+<!----------------------------------TEMPLATE FORM!!!! ----------------------------------------------------------------------------------->
+    <script type="text/x-template" id="template-form" >
+      <div>
+        <div v-if="errors.length" class="alert alert-warning alert-dismissible">
+          
+          <b>Pr favor corregir  los siguientes errores: </b>
+            <ul>
+              <li v-for="error in errors">{{error}}</li>
+            </ul>
+            <button type="button" @click="errors = []" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>  
+        </div>
+        
+        <form @submit="saveReview">
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="inputEmail">Email</label>
+              <input v-model="email" required type="email" class="form-control">
+            </div>      
+          </div>   
+      
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="inputCity">Reviews</label>
+              <textarea v-model="review" class="form-control"></textarea>       
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="inputState">Notas</label>
+              <select v-model.number="rating" class="form-control">
+                <option selected>Escoja...</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+            </div>     
+          </div>
+          <button type="submit" class="btn btn-primary">Agregar reviews</button>
+        </form>
+      </div>
+    </script>
+<!---------------------------FIN TEMPLATE FORMM!!!! ------------------------------------------------------------------------------------>
+
+    
+    <script src="./products/index.js"></script>
+    <script src="./products/tabs.js"></script>
+    <script src="./products/form.js"></script>
+    <script src="./products/send.js"></script>
+    <script src="./products/list.js"></script>
+    <script src="./products/detail.js"></script>
+     <script src="main.js"></script>   
   </body>    
+
 </html>
 
-<script>
-Vue.component ("product", { //primero dos argumentos el nombre del componente y obejeto (vacio) segundo argumento
-props:{
-  premium: {/*el que define el props es quién lo recibe, informacion que se enviará del padre al hijo con props*/
-    type: Boolean,
-    required: true,    
-  },
-  cart: {
-      type: Array,
-      required: true
-  }
-
-},
-  data() {
-    return{
-          description:'loren ipsum',
-          product: 'Longaniza de Brocolli',
-          selectedVariant: {},
-          link:'./longaniza.html',
-          details: ["500 gr", "organica", "libre de colesterol"],
-          variants:[{
-              id:5,
-              type:'red',
-              img: 'assets/roja.jpeg',
-              stock:10,
-              default: true
-          },
-          {
-              id:4,
-              type:'white',
-              img: 'assets/blanca.png',
-              stock: 0
-            }
-        ],
-      }
-  },
-  methods: {//hijo
-          updateProduct(variant) {
-            this.selectedVariant=variant;
-        },
-        addToCart(){
-         this.$emit("add-to-cart", this.selectedVariant)
-          this.selectedVariant.stock-=1
-        },
-        removeFromCart(){   
-            var variantInCart = this.cart.find(product => product== this.selectedVariant)        
-            
-            if(variantInCart){
-              this.$emit("remove-from-cart", this.selectedVariant)
-            this.selectedVariant.stock+=1    
-             }     
-        }
-      },
-  computed: {
-        inStock(){
-           return this.stock>0 ? true :false //retornar el stock >0 ? (if) es verdadero : (si no)  es falso 
-        },
-        img(){
-          return this.selectedVariant.img
-        },
-        stock(){
-          return this.selectedVariant.stock
-        },
-
-          shipping(){
-            
-            return this.premium == true ? "Gratis" : "2.000"
-          }
-      },
-
-      created() {
-        
-        this.selectedVariant= this.variants.find(item => item.default ==true)
-        
-      },
-
-  template: '#template-product'  
-  })
-    var app = new Vue({
-        el: '#app',
-        data:{
-          cart:[],
-          premium: true,
-          showStyle: {
-            display: "block",
-            "padding-right": "16px",
-            "padding-top": "20px"
-            },
-          displayCart: false
-        },
-        methods: {//los metodos se pueden separar con mayusculas
-          addToCart(variant){
-            this.cart.push(variant);
-          },
-
-          removeFromCart(variant){
-            var index = this.cart.indexOf(variant)//indexOff devuelve la posicion del objeto dentro del arreglo
-            if(index>-1){
-              this.cart.splice(index, 1)//splice elimina el objeto con ese indice (index) y borra 1 de los objetos por posicion
-            }
-          }
-        },
-        computed:{
-          modalStyle(){
-            if(this.displayCart){
-              return this.showStyle
-            }
-            else{
-              return {}
-            }
-          }
-        }
-    })
-
-    </script>
